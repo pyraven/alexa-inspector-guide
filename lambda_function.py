@@ -133,10 +133,21 @@ class ScanServerIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
          # type: (HandlerInput) -> Response
+         
+         """
+         This function will iterate through preconfigured inspector scan templates;
+         searching for a match based on the human name given during the user's voice input.
+         If a match is found, a lambda function will trigger the assessment to start and title it 
+         with the current date. 
+
+         NOTE: The server must be running.
+         """
+
         slots = handler_input.request_envelope.request.intent.slots
         server = slots["server"].value
         inspector_scan_list = []
         client = boto3.client('inspector')
+
         template_list = [i for i in client.list_assessment_templates()['assessmentTemplateArns']]
         for template in template_list:
             assessment = client.list_tags_for_resource(resourceArn=template)['tags']
